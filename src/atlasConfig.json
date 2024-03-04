@@ -1,9 +1,9 @@
 {
-    "appId": "metron-sizer-adcjy",
-    "appUrl": "https://realm.mongodb.com/groups/5e399be6553855dbe7d2eb57/apps/65c7247ee4a6917cdac4a7aa",
+    "appId": "skywalker-hnexk",
+    "appUrl": "https://realm.mongodb.com/groups/64f5e489d8a3f03aa3f834f4/apps/65c7247ee4a6917cdac4a7aa",
     "baseUrl": "https://realm.mongodb.com",
     "clientApiBaseUrl": "https://us-east-4.aws.realm.mongodb.com",
     "dataApiBaseUrl": "https://us-east-4.aws.data.mongodb-api.com",
-    "dataExplorerLink": "https://cloud.mongodb.com/links/5e399be6553855dbe7d2eb57/explorer/tools/database/collection/find",
+    "dataExplorerLink": "https://cloud.mongodb.com/links/64f5e489d8a3f03aa3f834f4/explorer/tools/database/collection/find",
     "dataSourceName": "mongodb-atlas"
 }

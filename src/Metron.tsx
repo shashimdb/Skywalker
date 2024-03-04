@@ -668,7 +668,7 @@ const Metron: React.FC<{}> = () => {
           <div className={wrapperStyle}>
             <div className={leftColumnStyle}>
               <MongoDBLogoMark height={35} className={logoStyle} />
-              <span className={logoStyleFont}>Metron</span>
+              <span className={logoStyleFont}>Skywalker</span>
             </div>
             <div className={rightColumnStyle}>
               <div className={sizingHeaderRight}>
@@ -701,8 +701,6 @@ const Metron: React.FC<{}> = () => {
                 ) : (
                   <SaveButton handleConfirmClick={handleConfirmClick} />
                 )}
-
-
 
 
               </div>
