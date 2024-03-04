@@ -49,7 +49,7 @@ const SearchBox: React.FC = () => {
             {/* <h6>Search with account or opportunity</h6> */}
 
 
-            <SearchInput size="large" aria-label="Label" onChange={handleInputChange} placeholder='Search sizing with account or opportunit no.' value={query} >
+            <SearchInput size="large" aria-label="Label" onChange={handleInputChange} placeholder='Jedi is here!!! find your embedings' value={query} >
 
 
                 {results.map((result) => (

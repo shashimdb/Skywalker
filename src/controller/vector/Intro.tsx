@@ -28,7 +28,7 @@ interface Document {
 
 
 
-const UserSizingList: React.FC = () => {
+const Intro: React.FC = () => {
     const [documents, setDocuments] = useState<Document[]>([]);
     const [allDocuments, setAllDocuments] = useState<Document[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -122,16 +122,13 @@ const UserSizingList: React.FC = () => {
 
             <div className="card-container">
 
-                <ExpandableCard className="custom-card"
-                    title="Your Embeddings"
-                    defaultOpen={true}
-                >
+       
                     
                     <div className="info-item">
 
-                        <span style={{ width: "40%" }}>Namespace </span>
-                        <span style={{ width: "20%" }}>Embed Field</span>
-                        <span style={{ width: "10%" }}>Use Case</span>
+                        <span style={{ width: "40%" }}>Account No. & Opportunity </span>
+                        <span style={{ width: "20%" }}>Tier</span>
+                        <span style={{ width: "10%" }}>Cloud Provider</span>
                         <span style={{ width: "20%" }}>Created By:</span>
                         <span style={{ width: "20%" }}>Date:</span>
                        <p style={{ width: "3%" }} ></p>
@@ -163,7 +160,7 @@ const UserSizingList: React.FC = () => {
                             <Button key={startPage + i} className={currentPage === startPage + i ? 'active' : ''} onClick={() => paginate(startPage + i)}>{startPage + i}</Button>
                         ))}
                     </div>
-                </ExpandableCard>
+       
 
 
             </div>
@@ -177,4 +174,4 @@ const UserSizingList: React.FC = () => {
     );
 };
 
-export default UserSizingList;
+export default Intro;

@@ -667,7 +667,7 @@ const Metron: React.FC<{}> = () => {
         <div className={logoHeader}>
           <div className={wrapperStyle}>
             <div className={leftColumnStyle}>
-              <MongoDBLogoMark height={35} className={logoStyle} />
+            <img src="jedi.png" alt="AWS" width="95" height="70" />
               <span className={logoStyleFont}>Skywalker</span>
             </div>
             <div className={rightColumnStyle}>
@@ -760,7 +760,6 @@ const Metron: React.FC<{}> = () => {
                     content='view' accountName={accountName} opportunityNo={''}
                     updateCalculatedValues={updateCalculatedValues}
                     handleDeleteCard={handleDeleteCard} />
-
                 </Tab>
 
               ) : shouldRefreshCalculation.workLoadType === 'Search' ? (
@@ -777,7 +776,7 @@ const Metron: React.FC<{}> = () => {
 
                 </Tab>
               ) : (
-                <Tab name="Your latest sizings">
+                <Tab name="Vectors">
                   <br></br>
 
 
@@ -798,7 +797,7 @@ const Metron: React.FC<{}> = () => {
 
             }
 
-            <Tab name="FAQ">
+            <Tab name="How this works?">
               <br></br>
               <FAQ />
             </Tab>
