@@ -4,6 +4,7 @@ import { WelcomePage } from "./WelcomePage";
 import { AppProvider, useApp } from "./RealmApp";
 import { ThemeProvider } from "./Theme";
 import Metron from "./Metron";
+import VStepper from './controller/vector/VStepper';
 import { userDataSetter } from './controller/context/SizingContext';
 
 
@@ -55,7 +56,7 @@ function App() {
           ) : null}
         </Toolbar> */}
       </AppBar>
-      {currentUser ? <Metron /> : <WelcomePage />}
+      {currentUser ? <VStepper /> : <WelcomePage />}
     </div>
   );
 }

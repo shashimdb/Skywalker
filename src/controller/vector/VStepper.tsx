@@ -4,7 +4,7 @@ import LeafyGreenProvider from "@leafygreen-ui/leafygreen-provider";
 import Stepper, { Step } from "@leafygreen-ui/stepper";
 import Toggle from "@leafygreen-ui/toggle";
 
-export default function App() {
+function VStepper() {
   const [darkMode, setDarkMode] = useState(true);
 
   return (
@@ -31,3 +31,5 @@ export default function App() {
     </LeafyGreenProvider>
   );
 }
+
+export default VStepper;
