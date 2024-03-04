@@ -5,7 +5,7 @@ import TextInput from '@leafygreen-ui/text-input';
 
 import { css, keyframes } from '@leafygreen-ui/emotion';
 import LeafygreenProvider from '@leafygreen-ui/leafygreen-provider';
-import { useSizingContext, sameUserDataSetter } from './context/SizingContext';
+import { useSizingContext, sameUserDataSetter, createIndexSetter } from './context/SizingContext';
 
 import axios from 'axios';
 import {
@@ -48,7 +48,7 @@ interface SaveButtonProps {
 }
 
 const SaveButton: React.FC<SaveButtonProps> = ({ handleConfirmClick }) => {
-    const { accountName, opportunityNo, setSizingData } = useSizingContext();
+    const { accountName, opportunityNo, setSizingData, setCreateIndex } = useSizingContext();
     const [open, setOpen] = useState(false);
     // const [localAccountName, setLocalAccountName] = useState('');
     // const [localOpportunityNo, setLocalOpportunityNo] = useState('');
@@ -62,7 +62,7 @@ const SaveButton: React.FC<SaveButtonProps> = ({ handleConfirmClick }) => {
     const localHandleConfirmClick = () => {
         // handleConfirmClick(localAccountName, localOpportunityNo);
         // setSizingData(localAccountName, localOpportunityNo);
-        setOpen(true); // Close the modal after confirming
+        createIndexSetter?.(true); // Close the modal after confirming
 
         // sameUserDataSetter && sameUserDataSetter(true);
     };

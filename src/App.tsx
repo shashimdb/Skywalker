@@ -56,7 +56,7 @@ function App() {
           ) : null}
         </Toolbar> */}
       </AppBar>
-      {currentUser ? <VStepper /> : <WelcomePage />}
+      {currentUser ? <Metron /> : <WelcomePage />}
     </div>
   );
 }

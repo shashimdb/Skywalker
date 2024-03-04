@@ -20,6 +20,8 @@ import SearchBox from './controller/utils/SearchBox';
 import UserSizingList from './controller/utils/UserSizingList';
 import BasicEmptyState from './controller/utils/BasicEmptyState';
 
+import VStepper from './controller/vector/VStepper';
+
 import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 
@@ -194,6 +196,7 @@ const Metron: React.FC<{}> = () => {
   if (currentUser && userDataSetter) {
     userDataSetter(currentUser.profile.email.toString());
   }
+
 
 
 
@@ -570,11 +573,12 @@ const Metron: React.FC<{}> = () => {
   }, []);
 
 
+ 
   useEffect(() => {
 
     try {
 
-
+     
 
       if (firstEffectCompleted) {
 
@@ -663,7 +667,7 @@ const Metron: React.FC<{}> = () => {
 
     <SizingProvider>
       <LeafygreenProvider>
-
+   
         <div className={logoHeader}>
           <div className={wrapperStyle}>
             <div className={leftColumnStyle}>
@@ -740,8 +744,6 @@ const Metron: React.FC<{}> = () => {
 
               {card}
 
-
-              {/* <Button darkMode={true} className={buttonCardStyle} onClick={() => handleDeleteCard(index)}>Delete </Button> */}
             </Card>
           ))}
         </div>
@@ -750,32 +752,12 @@ const Metron: React.FC<{}> = () => {
 
           <Tabs aria-labelledby="some-id" setSelected={setSelected} selected={selected}>
             {
-              shouldRefreshCalculation.workLoadType === 'Generic' ? (
+              shouldRefreshCalculation.workLoadType !== 'Generic' ? (
                 <Tab name="Generic Tier Sizing">
-                  <Generic
-                    workLoadType={shouldRefreshCalculation.workLoadType}
-                    workLoadName={shouldRefreshCalculation.workLoadName}
-                    cloudProvider={shouldRefreshCalculation.cloudProvider}
-                    workLoadIndex={shouldRefreshCalculation.workLoadIndex}
-                    content='view' accountName={accountName} opportunityNo={''}
-                    updateCalculatedValues={updateCalculatedValues}
-                    handleDeleteCard={handleDeleteCard} />
+                  <VStepper />
                 </Tab>
 
-              ) : shouldRefreshCalculation.workLoadType === 'Search' ? (
-                <Tab name="Search Tier Sizing">
-
-                  <Search
-                    workLoadType={shouldRefreshCalculation.workLoadType}
-                    workLoadName={shouldRefreshCalculation.workLoadName}
-                    cloudProvider={shouldRefreshCalculation.cloudProvider}
-                    workLoadIndex={shouldRefreshCalculation.workLoadIndex}
-                    content='view' accountName={accountName} opportunityNo={''}
-                    updateCalculatedValues={updateCalculatedValues}
-                    handleDeleteCard={handleDeleteCard} />
-
-                </Tab>
-              ) : (
+              )  : (
                 <Tab name="Vectors">
                   <br></br>
 
@@ -820,6 +802,7 @@ const Metron: React.FC<{}> = () => {
 }
 
 const AppWithProvider: React.FC = () => {
+  const { createIndex } = useSizingContext();
   return (
     <SizingProvider>
       <Metron />

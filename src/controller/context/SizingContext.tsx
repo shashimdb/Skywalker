@@ -9,12 +9,15 @@ interface SizingContextProps {
   user: string;
   sameUser: boolean;
   hasRendered: boolean;
-  cardIndex: number; 
+  cardIndex: number;
+  createIndex: boolean;
+
   setSizingData: (accountName: string, opportunityNo: string) => void;
   setUserData: (user: string) => void;
   setSameUserData: (sameUser: boolean) => void;
   setHasRendered: (hasRendered: boolean) => void;
   setCardIndex: (cardIndex: number) => void;
+  setCreateIndex: (createIndex: boolean) => void;
 }
 
 const SizingContext = createContext<SizingContextProps | undefined>(undefined);
@@ -34,7 +37,7 @@ let hasRenderedSetter: ((hasRendered: boolean) => void) | null = null;
 
 let cardIndexSetter: ((cardIndex: number) => void) | null = null;
 
-
+let createIndexSetter: ((createIndex: boolean) => void) | null = null;
 
 export const SizingProvider: React.FC<SizingProviderProps> = ({ children }) => {
   const [accountName, setAccountName] = useState('');
@@ -43,7 +46,7 @@ export const SizingProvider: React.FC<SizingProviderProps> = ({ children }) => {
   const [sameUser, setSameUser] = useState(false);
   const [hasRendered, setHasRendered] = useState(false);
   const [cardIndex, setCardIndex] = useState<number>(0);
-
+  const [createIndex, setCreateIndex] = useState(false);
 
 
   const setSizingData = (newAccountName: string, newOpportunityNo: string) => {
@@ -53,22 +56,27 @@ export const SizingProvider: React.FC<SizingProviderProps> = ({ children }) => {
 
   const setUserData = (newUser: string) => {
     setUser(newUser);
-  
+
   };
 
   const setSameUserData = (newUser: boolean) => {
     setSameUser(newUser);
-  
+
   };
 
   const setHasRenderedData = (newHasRendered: boolean) => {
     setHasRendered(newHasRendered);
-  
+
   };
 
   const setCardIndexData = (newCardIndex: number) => {
     setCardIndex(newCardIndex);
-  
+
+  };
+
+  const setCreateIndexData = (newCreateIndex: boolean) => {
+    setCreateIndex(newCreateIndex);
+
   };
 
   // Store the setSizingData function in the sizingDataSetter variable
@@ -82,8 +90,10 @@ export const SizingProvider: React.FC<SizingProviderProps> = ({ children }) => {
 
   cardIndexSetter = setCardIndex;
 
+  createIndexSetter = setCreateIndex;
+
   return (
-    <SizingContext.Provider value={{ accountName, opportunityNo, user,  sameUser, hasRendered, cardIndex, setSizingData, setUserData, setSameUserData, setHasRendered,setCardIndex  }}>
+    <SizingContext.Provider value={{ accountName, opportunityNo, user, sameUser, hasRendered, cardIndex, createIndex, setSizingData, setUserData, setSameUserData, setHasRendered, setCardIndex, setCreateIndex }}>
       {children}
     </SizingContext.Provider>
   );
@@ -97,4 +107,4 @@ export const useSizingContext = () => {
   return context;
 };
 
-export { sizingDataSetter, userDataSetter, sameUserDataSetter, hasRenderedSetter, cardIndexSetter };
+export {  sizingDataSetter, userDataSetter, sameUserDataSetter, hasRenderedSetter, cardIndexSetter, createIndexSetter };
