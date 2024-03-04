@@ -1,0 +1,76 @@
+/* StateAICSS.css */
+.grid-container-coachgtm {
+  margin-top: 25px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+
+.grid-item-left {
+  width: 20%;
+}
+
+.grid-item-right {
+  width: 80%;
+}
+
+
+  .grid-banner{
+    margin-top: 25px;
+    gap: 16px; /* Adjust the gap between cards as needed */
+  }
+  
+  .grid-item {
+    width: 100%;
+  }
+
+
+  
+  .callout-note {
+    margin-top: 25px;
+  }
+
+
+
+
+.quick-answer,
+.detailed-answer,
+.business-value,
+.discovery-questions {
+  margin-bottom: 20px;
+}
+
+.quick-answer ol,
+.detailed-answer ol {
+  margin-left: 20px;
+}
+
+.business-value,
+.discovery-questions {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+
+.keyword-link {
+  color: #0bc40b; /* Use your desired shade of grey */
+  text-decoration: underline; /* Add underline to indicate it's clickable */
+  cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+.grid-item-right {
+  width: 80%;
+  transition: opacity 0.3s ease; /* Add transition for a smooth effect */
+}
+
+.grid-item-right.disabled {
+  pointer-events: none; /* Disable pointer events */
+  opacity: 0.5; /* Reduce opacity to visually indicate disabled state */
+}
+
+.grid-item-right.enabled {
+  opacity: 1; /* Set full opacity for the enabled state */
+}
+
