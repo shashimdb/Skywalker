@@ -1,0 +1,10 @@
+.SearchResult {
+    position: absolute;
+    z-index: 1; /* Ensure SearchResult appears above modal content */
+    color: red;
+  }
+
+
+.link-button {
+  padding-right: 10px;
+}
