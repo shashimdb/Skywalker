@@ -18,7 +18,8 @@ function VStepper() {
     selectedCollection: "",
     selectedField: "",
     selectedApiEndpoint: "",
-    apiKey: ""
+    apiKey: "",
+    selectedUsecase: "",
   });
 
   const decrementStep = () => {
@@ -142,7 +143,7 @@ function VStepper() {
               <div style={{ display: 'flex', marginBottom: '20px', justifyContent: 'space-between' }}>
                 <div style={{ flex: 1, marginRight: '20px', padding: '25px' }}>
 
-                  <h4>Selection Information </h4>
+                  <h4>User Inputs </h4>
                   <p>Index Name: {formData.indexName}</p>
                   <p>Selected Database: {formData.selectedDatabase}</p>
                   <p>Selected Collection: {formData.selectedCollection}</p>
@@ -154,7 +155,7 @@ function VStepper() {
                 -----------
                 <div style={{ flex: 1, marginLeft: '20px' }}>
 
-                  <h4>Output Summary </h4>
+                  <h4>Overall Summary </h4>
                   <p>Index Name: {formData.indexName}</p>
                   <p>Selected Database: {formData.selectedDatabase}</p>
                   <p>Selected Collection: {formData.selectedCollection}</p>
@@ -168,26 +169,31 @@ function VStepper() {
           <div style={{ flex: 1, marginLeft: '20px' }}>
 
             <Card>
+
+              <h1>Implement usecase on newly cleared embeddings</h1>
+         
+              <Select
+              className="select-style"
+              label="Select Usecase"
+              name="selectedUsecase"
+              placeholder="Select"
+              size={Size.Large}
+              value={formData.selectedUsecase}
+              onChange={(value) => setFormData({ ...formData, selectedUsecase: value })}
+            >
+              <Option value="RAG">RAG</Option>
+              <Option value="Semantic Search">Semantic Search</Option>
+              <Option value="QA">Q & A </Option>
+              <Option value="ChatBot">ChatBot </Option>
+            </Select>
+
+
               <Button>
-                Create Semantic Search
+                Confirm
               </Button>
-              <p>
-
-                Semantic search is a revolutionary approach to information retrieval that aims to understand the intent and context behind a user's query rather than relying solely on keyword matching. Unlike traditional search engines, which primarily analyze text based on the occurrence of specific words or phrases, semantic search engines delve deeper into the meaning of the query and the content being searched.
-              </p>
-
             </Card>
-            <br></br>
-            <Card>
-              <Button>
-                Create RAG
-              </Button>
-
-              <p>
-                Retrievable Augmented Generation (RAG) is an innovative approach in natural language processing (NLP) that combines the strengths of two prominent models: retriever models and generator models. The retriever component is responsible for efficiently searching and retrieving relevant context from a large corpus of documents, while the generator component generates coherent and contextually relevant responses based on the retrieved information.
-              </p>
-
-            </Card>
+           
+        
 
           </div>
         </div>
