@@ -1,0 +1,186 @@
+/* StateAICSS.css */
+.grid-container-coachgtm {
+  margin-top: 25px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+
+.grid-item-left {
+  width: 20%;
+}
+
+.grid-item-right {
+  width: 80%;
+}
+
+
+  .grid-banner{
+    margin-top: 25px;
+    gap: 16px; /* Adjust the gap between cards as needed */
+  }
+  
+  .grid-item {
+    width: 100%;
+  }
+
+  .inline-inputs {
+    display: flex;
+    gap: 8px;
+}
+
+.indexButton {
+
+  margin-right: 4px;
+
+}
+  
+  .callout-note {
+    margin-top: 25px;
+  }
+
+
+  .collection-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+}
+
+.collection-table th, .collection-table td {
+    border-bottom: 1px solid #ccc;
+    padding: 8px;
+}
+
+.collection-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: left;
+  
+}
+
+.collection-table td {
+    text-align: left;
+    font-size: 15px;
+}
+
+.collection-table button {
+    margin-right: 4px;
+   
+}
+
+.indexButton {
+  margin-right: 4px;
+  margin-top: 25px;
+}
+
+.index-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.quick-answer,
+.detailed-answer,
+.business-value,
+.discovery-questions {
+  margin-bottom: 20px;
+}
+
+.quick-answer ol,
+.detailed-answer ol {
+  margin-left: 20px;
+}
+
+.business-value,
+.discovery-questions {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.right-column {
+  flex: 30%;
+
+  padding-left: 15px;
+}
+
+
+.keyword-link {
+  color: #0bc40b; /* Use your desired shade of grey */
+  text-decoration: underline; /* Add underline to indicate it's clickable */
+  cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+.grid-item-right {
+  width: 80%;
+  transition: opacity 0.3s ease; /* Add transition for a smooth effect */
+}
+
+.grid-item-right.disabled {
+  pointer-events: none; /* Disable pointer events */
+  opacity: 0.5; /* Reduce opacity to visually indicate disabled state */
+}
+
+.grid-item-right.enabled {
+  opacity: 1; /* Set full opacity for the enabled state */
+}
+
+
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.index-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.table-container {
+  margin-top: 16px;
+}
+
+
+.form-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.form-column {
+  width: calc(50% - 10px); /* Adjust the width as needed */
+}
+
+.inline-inputs {
+  margin-bottom: 20px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+
+}
+
+
+.buttonStyle2 {
+
+  background-color: #00684a;
+  color: #ffffff;
+  margin-right: 10px;
+  width: auto;
+
+}
