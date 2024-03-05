@@ -7,10 +7,13 @@ import Toggle from "@leafygreen-ui/toggle";
 import TextInput from '@leafygreen-ui/text-input';
 import { Option, OptionGroup, Select, Size } from '@leafygreen-ui/select';
 import { useSizingContext, createIndexSetter } from '../context/SizingContext';
+import DataService from "../service/DataSerice";
+import * as Realm from "realm-web";
 
 function VStepper() {
   const [darkMode, setDarkMode] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [progress, setOnprogress] = useState('')
   const maxDisplayedSteps = 5;
   const { setCreateIndex, setUsecaseSelected, usecaseSelected } = useSizingContext();
 
@@ -31,8 +34,70 @@ function VStepper() {
   };
 
   const incrementStep = () => {
+
     if (currentStep < maxDisplayedSteps) {
       setCurrentStep(currentStep + 1);
+    }
+  };
+
+
+  async function generateEmbedding() {
+
+  }
+
+  /// Implement complete logic
+  const handleSubmit = async () => {
+
+    try {
+
+      const dataService = new DataService()
+      const clusterName = "vector-demo"
+      // Handle Login
+      const loginHandle = await dataService.handleLogin({
+        "username": "<public-key>", "apiKey": "<private-key>"
+      })
+      dataService.ACCESS_TOKEN = loginHandle.data.access_token
+      setOnprogress("Login Success...");
+      // Create App
+      const groupId = '<group-id>'
+      const createAppHandle = await dataService.handleCreateApp(groupId)
+      console.log(createAppHandle)
+      const appId = createAppHandle.data._id
+      const clientAppId = createAppHandle.data.client_app_id
+      console.log(clientAppId)
+      setOnprogress("App Created...")
+      const enableAuth = await dataService.handleAuthProvider(groupId, appId)
+      setOnprogress("Enabling Auth...")
+      console.log(enableAuth)
+      // Link DS
+      const linkDataSource = await dataService.handleLinkDataSource(groupId, appId, clusterName)
+      setOnprogress("Datasource Linked...")
+      console.log("Link DS - ", linkDataSource)
+      const serviceId = linkDataSource.data._id
+      // Create rule
+      const createRules = await dataService.handleCreateRule(groupId, appId, "rag", "data", serviceId)
+      setOnprogress("Creating Rules...")
+      console.log(createRules)
+
+      // Create Vectors
+      const app = new Realm.App({ id: clientAppId });
+      const credentials = Realm.Credentials.anonymous();
+      try {
+        const user = await app.logIn(credentials);
+        const mongo = user.mongoClient("vector-data");
+        const collection = mongo.db("rag").collection("data");
+        console.log(collection)
+        const documents = await collection.find({});
+        setOnprogress("Creating vector..")
+        documents.forEach(element => {
+          console.log("data : ", element.line)
+        });
+      } catch (err) {
+        console.error("Failed to log in", err);
+      }
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
     }
   };
 
@@ -134,6 +199,7 @@ function VStepper() {
       return (
         <Card>
           <h1>i am {title}</h1>
+          <p> Progress : {progress} </p>
         </Card>
       );
     } else if (currentStep === stepNumber && currentStep === 4) {
@@ -172,7 +238,7 @@ function VStepper() {
 
             <Card>
 
-              <h1>Implement usecase on newly cleared embeddings</h1>
+              <h1>Implement usecase on newly created embeddings</h1>
 
               <Select
                 className="select-style"
@@ -197,14 +263,14 @@ function VStepper() {
                   if (formData.selectedUsecase === "RAG") {
                     setCreateIndex(false);
                     setUsecaseSelected('RAG');
-         
+
 
                   } else if (formData.selectedUsecase === "Semantic Search") {
                     setCreateIndex(false);
                     setUsecaseSelected('Semantic');
-                    
+
                   }
-            
+
                 }}
               >
                 Confirm
@@ -257,8 +323,12 @@ function VStepper() {
             if (currentStep === 4) {
               // Navigate to the home page
               window.location.href = "/home"; // Update the URL as needed
-            } else {
+            } else if (currentStep === 2) {
               // Increment the step
+              incrementStep();
+              handleSubmit();
+            }
+            else {
               incrementStep();
             }
           }}
