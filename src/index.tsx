@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { css } from '@leafygreen-ui/emotion';
+import { SizingProvider } from './controller/context/SizingContext';
 
 
 
@@ -199,9 +200,9 @@ export const globalStyles = css`;
 ReactDOM.render(
   <React.StrictMode>
     <div className={globalStyles}>
-
-      <App />
-
+      <SizingProvider>
+        <App />
+      </SizingProvider>
     </div>
   </React.StrictMode>,
   document.getElementById('root')

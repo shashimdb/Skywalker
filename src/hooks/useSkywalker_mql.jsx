@@ -13,7 +13,7 @@ import {
 
 const { dataSourceName } = atlasConfig;
 
-export function useMetrons() {
+export function useSkywalker() {
   // Set up a list of todos in state
   const app = useApp();
   const [todos, setTodos] = React.useState([]);

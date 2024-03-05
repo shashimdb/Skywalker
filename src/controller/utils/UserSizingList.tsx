@@ -10,7 +10,7 @@ import ExpandableCard from "@leafygreen-ui/expandable-card";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRemove, faTrash, faEdit, faEye } from '@fortawesome/free-solid-svg-icons';
 
-import { useMetrons } from "../../hooks/useMetrons";
+import { useSkywalker } from "../../hooks/useSkywalker";
 
 import '../../css/UserSizingList.css';
 
@@ -36,7 +36,7 @@ const UserSizingList: React.FC = () => {
     const { accountName, opportunityNo, user } = useSizingContext();
     const documentsPerPage = 5; // Number of documents per page
     const dataService = new DataService();
-    const { ...todoActions } = useMetrons();
+    const { ...todoActions } = useSkywalker();
 
     useEffect(() => {
         fetchData();

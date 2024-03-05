@@ -9,8 +9,8 @@ const FAQ = () => {
   // Define a list of frequently asked questions and answers
   const faqData = [
     {
-      question: 'What is the purpose of this website?',
-      answer: 'This website provides information about our products and services.',
+      question: 'What is the purpose of this skywalker?',
+      answer: 'skywalker helps customer to automate creating embeddings for their data',
     },
     {
       question: 'How can I contact team?',

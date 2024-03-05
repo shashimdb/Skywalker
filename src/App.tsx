@@ -3,9 +3,9 @@ import { WelcomePage } from "./WelcomePage";
 
 import { AppProvider, useApp } from "./RealmApp";
 import { ThemeProvider } from "./Theme";
-import Metron from "./Metron";
+import Skywalker from "./Skywalker";
 import VStepper from './controller/vector/VStepper';
-import { userDataSetter } from './controller/context/SizingContext';
+import { SizingProvider, userDataSetter } from './controller/context/SizingContext';
 
 
 
@@ -33,7 +33,7 @@ function App() {
 
   if (userDataSetter && currentUser) {
     userDataSetter(currentUser.profile.email.toString());
-   
+
   }
 
 
@@ -56,7 +56,12 @@ function App() {
           ) : null}
         </Toolbar> */}
       </AppBar>
-      {currentUser ? <Metron /> : <WelcomePage />}
+      {currentUser ?
+        <SizingProvider>
+          <Skywalker />
+        </SizingProvider>
+        :
+        <WelcomePage />}
     </div>
   );
 }

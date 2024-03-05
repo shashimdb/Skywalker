@@ -1,19 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { css, keyframes } from '@leafygreen-ui/emotion';
 import LeafygreenProvider from '@leafygreen-ui/leafygreen-provider';
-import { MongoDBLogoMark } from '@leafygreen-ui/logo';
-import Button from '@leafygreen-ui/button';
-import Card from '@leafygreen-ui/card';
-import Modal from '@leafygreen-ui/modal';
-import { Tabs, Tab } from '@leafygreen-ui/tabs';
-import Generic from './controller/workload/Generic';
-import Search from './controller/workload/Search';
-import SaveButton from './controller/SaveButton';
-import NodeType from './controller/NodeType';
-import TierInfo from './controller/utils/TierInfo';
-import CurrentUrlGenerator from './controller/utils/CurrentUrlGenerator';
 
-import { SizingProvider } from './controller/context/SizingContext';
+import Button from '@leafygreen-ui/button';
+
+import { Tabs, Tab } from '@leafygreen-ui/tabs';
+
+import SaveButton from './controller/SaveButton';
+
 import FAQ from './controller/utils/FAQ';
 
 import SearchBox from './controller/utils/SearchBox';
@@ -22,8 +16,6 @@ import BasicEmptyState from './controller/utils/BasicEmptyState';
 
 import VStepper from './controller/vector/VStepper';
 
-import { useLocation } from 'react-router-dom';
-import queryString from 'query-string';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
@@ -32,7 +24,7 @@ import DataService from './controller/service/DataSerice';
 import { sizingDataSetter, userDataSetter, useSizingContext, hasRenderedSetter, cardIndexSetter } from './controller/context/SizingContext';
 
 import { AppProvider, useApp } from "./RealmApp";
-import { useMetrons } from "./hooks/useMetrons";
+import { useSkywalker } from "./hooks/useSkywalker";
 
 const leafAnimation = keyframes`
   from {
@@ -182,10 +174,11 @@ const rightColumnStyle = css`
   justify-content: flex-end;
 `;
 
-const Metron: React.FC<{}> = () => {
+const Skywalker: React.FC<{}> = () => {
 
   const { currentUser, logOut } = useApp();
-  const { ...todoActions } = useMetrons();
+  const { createIndex } = useSizingContext();
+  const { ...todoActions } = useSkywalker();
 
   const todoDocument = {
     name: currentUser?.profile.email.toString(),
@@ -196,8 +189,6 @@ const Metron: React.FC<{}> = () => {
   if (currentUser && userDataSetter) {
     userDataSetter(currentUser.profile.email.toString());
   }
-
-  const [isCreateIndex, setCreateIndex] = useState(true);
   const [hasIndex, setHasIndex] = useState(false);
 
   const [selected, setSelected] = useState(0);
@@ -205,21 +196,18 @@ const Metron: React.FC<{}> = () => {
   const dataService = new DataService();
 
   useEffect(() => {
-
     try {
-
-
-
+      console.log(createIndex);
     } catch (error) {
-
+      // Handle error if necessary
     }
-  }, []);
+  }, [createIndex]);
 
 
 
   return (
 
-    <SizingProvider>
+
       <LeafygreenProvider>
 
         <div className={logoHeader}>
@@ -242,7 +230,7 @@ const Metron: React.FC<{}> = () => {
                     Log Out
                   </Button>
                 ) : null}
-                {isCreateIndex ? (
+                {createIndex ? (
                   <><Button
                     href={window.location.origin}
                     target="_blank"
@@ -268,7 +256,7 @@ const Metron: React.FC<{}> = () => {
         <div>
           <div className={flexContainer}>
 
-            {!isCreateIndex ? (
+            {!createIndex ? (
 
               <div className={sizingHeaderLeft}>
                 <div className={searchBox}>
@@ -289,7 +277,7 @@ const Metron: React.FC<{}> = () => {
 
           <Tabs aria-labelledby="some-id" setSelected={setSelected} selected={selected}>
             {
-              isCreateIndex ? (
+              createIndex ? (
                 <Tab name="Create Vector Index">
                   <VStepper />
                 </Tab>
@@ -326,7 +314,7 @@ const Metron: React.FC<{}> = () => {
         </div>
 
       </LeafygreenProvider>
-    </SizingProvider>
+
 
   );
 }
@@ -334,10 +322,10 @@ const Metron: React.FC<{}> = () => {
 const AppWithProvider: React.FC = () => {
   const { createIndex } = useSizingContext();
   return (
-    <SizingProvider>
-      <Metron />
-    </SizingProvider>
+
+      <Skywalker />
+
   );
 };
 
-export default Metron;
+export default Skywalker;

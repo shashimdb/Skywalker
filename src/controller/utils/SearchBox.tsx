@@ -6,7 +6,7 @@ import {
     SearchResultGroup
 } from "@leafygreen-ui/search-input";
 
-import { useMetrons } from "../../hooks/useMetrons";
+import { useSkywalker } from "../../hooks/useSkywalker";
 
 import  DataService from '../service/DataSerice';
 
@@ -20,7 +20,7 @@ const SearchBox: React.FC = () => {
     const [query, setQuery] = useState<string>('');
     const [results, setResults] = useState<SearchResult[]>([]);
     const dataService = new DataService();
-    const { ...todoActions } = useMetrons();
+    const { ...todoActions } = useSkywalker();
 
     const handleInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value;
