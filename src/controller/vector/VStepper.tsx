@@ -14,8 +14,23 @@ function VStepper() {
   const [darkMode, setDarkMode] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setOnprogress] = useState('')
+
+
+
+  const [loginProgress, setLoginProgress] = useState('')
+  const [appProgress, setAppProgress] = useState('')
+  const [authProgress, setAuthProgress] = useState('')
+  const [dsProgress, setDSProgress] = useState('')
+  const [ruleProgress, setRuleProgress] = useState('')
+  const [vectorProgress, setVectorProgress] = useState('')
+  const [indexProgress, setIndexProgress] = useState('')
+
+
   const maxDisplayedSteps = 5;
   const { setCreateIndex, setUsecaseSelected, usecaseSelected } = useSizingContext();
+
+  let jsonData = {};
+
 
   const [formData, setFormData] = useState({
 
@@ -46,7 +61,32 @@ function VStepper() {
 
     if (currentStep < maxDisplayedSteps) {
       setCurrentStep(currentStep + 1);
+      if(currentStep === 1){
+         jsonData = {
+          atlasDataDetails: {
+            clusterName: formData.selectedCluster,
+            database: formData.selectedDatabase,
+            collection: formData.selectedCollection,
+            selectField: formData.selectedField
+          },
+          atlasAccessDetails: {
+            groupID: formData.groupID,
+            atlasUsername: formData.atlasUsername,
+            atlasAPIKey: formData.atlasAPIKey
+          },
+          indexDetails: {
+            similarity: formData.similarity
+          },
+          embeddingAPIDetails: {
+            apiEndpoint: formData.selectedApiEndpoint,
+            apiKey: formData.apiKey
+          }
+        };
+    
+      }
     }
+
+    console.log("JSON Data:", jsonData);
   };
 
 
@@ -68,7 +108,8 @@ function VStepper() {
       })
       dataService.ACCESS_TOKEN = loginHandle.data.access_token
       console.log(dataService.ACCESS_TOKEN)
-      setOnprogress("Login Success...");
+      setOnprogress("Login Success...")
+      setLoginProgress("Completed")
       // Create App
       const createAppHandle = await dataService.handleCreateApp(groupId)
       console.log(createAppHandle)
@@ -76,17 +117,21 @@ function VStepper() {
       const clientAppId = createAppHandle.data.client_app_id
       console.log(clientAppId)
       setOnprogress("App Created...")
+      setAppProgress("Completed");
       const enableAuth = await dataService.handleAuthProvider(groupId, appId)
       setOnprogress("Enabling Auth...")
+      setAuthProgress("Completed")
       console.log(enableAuth)
       // Link DS
       const linkDataSource = await dataService.handleLinkDataSource(groupId, appId, clusterName)
       setOnprogress("Datasource Linked...")
+      setDSProgress("Completed");
       console.log("Link DS - ", linkDataSource)
       const serviceId = linkDataSource.data._id
       // Create rule
       const createRules = await dataService.handleCreateRule(groupId, appId, dbname, collectionName, serviceId)
       setOnprogress("Creating Rules...")
+      setRuleProgress("Completed");
       console.log(createRules)
 
       // Create Vectors
@@ -99,6 +144,7 @@ function VStepper() {
         console.log(collection)
         const documents = await collection.find({});
         setOnprogress("Creating vectors..")
+        setLoginProgress("Completed");
         console.log("documnets array : ", documents)
         documents.forEach(async (element: any) => {
           const embedding = await dataService.getEmbeddings(element[fieldName], "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")
@@ -107,15 +153,19 @@ function VStepper() {
           )
         });
         setOnprogress("Vector Creation Completed!")
+        setVectorProgress("Completed");
         //Create Vector Index
         await dataService.handleCreateIndex(groupId, clusterName, collectionName, dbname, "embedding")
         setOnprogress("Vector Index Created!")
+        setIndexProgress("Completed");
       } catch (err) {
         console.error("Failed to log in", err);
+        setOnprogress("Failed to log in")
       }
 
     } catch (error) {
       console.error('Error fetching data:', error);
+      setOnprogress("Failed while automating")
     }
   };
 
@@ -131,242 +181,339 @@ function VStepper() {
       );
     } else if (currentStep === stepNumber && currentStep === 1) {
       return (
-        <div style={{ justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>
-          <Card>
-            <div style={{ flex: 1, marginRight: '20px', padding: '25px' }}>
+        <>
 
-              <Select
-                className="select-style"
-                label="Cluster Name"
-                name="cluster"
-                placeholder="Select"
-                size={Size.Default}
-                value={formData.selectedCluster}
-                onChange={(value) => setFormData({ ...formData, selectedCluster: value })}
-              >
-                <Option value="Cluster1">Cluster1</Option>
-                <Option value="Cluster2">Cluster2</Option>
-              </Select>
+          <div style={{ justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>
+            <Card>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>
 
-              <Select
-                className="select-style"
-                label="Database"
-                name="database"
-                placeholder="Select"
-                size={Size.Default}
-                value={formData.selectedDatabase}
-                onChange={(value) => setFormData({ ...formData, selectedDatabase: value })}
-              >
-                <Option value="DB1">DB1</Option>
-                <Option value="DB2">DB2</Option>
-              </Select>
+                {/* Column 1 */}
+                <div style={{ flex: 1, marginRight: '20px' }}>
+                  {/* Atlas Data Details */}
+                  <h2 style={{ color: '#00684A' }}>Atlas Data Details</h2>
+                  <div style={{ marginBottom: '20px' }}>
+                    <Select
+                      className="select-style"
+                      label="Cluster Name"
+                      name="cluster"
+                      placeholder="Select"
+                      size={Size.Default}
+                      value={formData.selectedCluster}
+                      onChange={(value) => setFormData({ ...formData, selectedCluster: value })}
+                    >
+                      <Option value="Cluster1">Cluster1</Option>
+                      <Option value="vectorCluster">vectorCluster</Option>
+                    </Select>
 
-
-              <Select
-                className="select-style"
-                label="Collection"
-                name="collection"
-                placeholder="Select"
-                size={Size.Default}
-                value={formData.selectedCollection}
-                onChange={(value) => setFormData({ ...formData, selectedCollection: value })}
-              >
-                <Option value="Col1">Col1</Option>
-                <Option value="Col2">Col2</Option>
-              </Select>
+                    <Select
+                      className="select-style"
+                      label="Database"
+                      name="database"
+                      placeholder="Select"
+                      size={Size.Default}
+                      value={formData.selectedDatabase}
+                      onChange={(value) => setFormData({ ...formData, selectedDatabase: value })}
+                    >
+                      <Option value="DB1">DB1</Option>
+                      <Option value="library">library</Option>
+                    </Select>
 
 
-
-              <Select
-                className="select-style"
-                label="Select Field"
-                name="field"
-                placeholder="Select"
-                size={Size.Default}
-                value={formData.selectedField}
-                onChange={(value) => setFormData({ ...formData, selectedField: value })}
-              >
-                <Option value="Field1">Field1</Option>
-                <Option value="Field2">Field2</Option>
-              </Select>
-            </div>
-            <div style={{ flex: 1, marginLeft: '20px' }}>
-
-              <TextInput
-                label="Atlas Groupd ID "
-                description="Description"
-                name="groupID"
-                placeholder="Placeholder"
-                value={formData.groupID}
-                onChange={(e) => setFormData({ ...formData, groupID: e.target.value })}
-              />
+                    <Select
+                      className="select-style"
+                      label="Collection"
+                      name="collection"
+                      placeholder="Select"
+                      size={Size.Default}
+                      value={formData.selectedCollection}
+                      onChange={(value) => setFormData({ ...formData, selectedCollection: value })}
+                    >
+                      <Option value="Col1">Col1</Option>
+                      <Option value="users">users</Option>
+                    </Select>
 
 
-              <TextInput
-                label="Atlas Username"
-                description="Description"
-                name="atlasUsername"
-                placeholder="Placeholder"
-                value={formData.atlasUsername}
-                onChange={(e) => setFormData({ ...formData, atlasUsername: e.target.value })}
-              />
 
-              <TextInput
-                label="Atlas API Key"
-                description="Description"
-                name="atlasAPIKey"
-                placeholder="Placeholder"
-                value={formData.atlasAPIKey}
-                onChange={(e) => setFormData({ ...formData, atlasAPIKey: e.target.value })}
-              />
+                    <Select
+                      className="select-style"
+                      label="Select Field"
+                      name="field"
+                      placeholder="Select"
+                      size={Size.Default}
+                      value={formData.selectedField}
+                      onChange={(value) => setFormData({ ...formData, selectedField: value })}
+                    >
+                      <Option value="Field1">Field1</Option>
+                      <Option value="name">name</Option>
+                    </Select>
+                  </div>
+                  {/* Embedding API Details */}
+                  <h2 style={{ color: '#00684A' }}>Index Details</h2>
+                  <div>
 
-              <Select
-                className="select-style"
-                label="API Endpoints"
-                name="ApiEndpoint"
-                placeholder="Select"
-                size={Size.Default}
-                value={formData.selectedApiEndpoint}
-                onChange={(value) => setFormData({ ...formData, selectedApiEndpoint: value })}
-              >
-                <Option value="OpenAI">OpenAI</Option>
-                <Option value="HuggingFace">HuggingFace</Option>
-              </Select>
-
-              <TextInput
-                label="API Key"
-                description="Description"
-                placeholder="Placeholder"
-                value={formData.apiKey}
-                onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
-              />
+                    <Select
+                      className="select-style"
+                      label="Similarity"
+                      name="similarity"
+                      placeholder="Select"
+                      size={Size.Default}
+                      value={formData.similarity}
+                      onChange={(value) => setFormData({ ...formData, similarity: value })}
+                    >
+                      <Option value="cosine">Cosine</Option>
+                      <Option value="dotproduct">DotProduct</Option>
+                      <Option value="wuclidean">Euclidean</Option>
+                    </Select>
 
 
-              <Select
-                className="select-style"
-                label="Similarity"
-                name="similarity"
-                placeholder="Select"
-                size={Size.Default}
-                value={formData.similarity}
-                onChange={(value) => setFormData({ ...formData, similarity: value })}
-              >
-                <Option value="cosine">Cosine</Option>
-                <Option value="dotproduct">DotProduct</Option>
-                <Option value="wuclidean">Euclidean</Option>
-              </Select>
+                  </div>
+                </div>
+                {/* Column 2 */}
+                <div style={{ flex: 1, marginLeft: '20px' }}>
+                  {/* Atlas Access Details */}
+                  <h2 style={{ color: '#00684A' }}>Atlas Access Details</h2>
+                  <div style={{ marginBottom: '20px' }}>
+                    <TextInput
+                      label="Atlas Groupd ID "
+                      description="Description"
+                      name="groupID"
+                      placeholder="Placeholder"
+                      value={formData.groupID}
+                      onChange={(e) => setFormData({ ...formData, groupID: e.target.value })} />
 
-            </div>
-          </Card>
-        </div>
+
+                    <TextInput
+                      label="Atlas Username"
+                      description="Description"
+                      name="atlasUsername"
+                      placeholder="Placeholder"
+                      value={formData.atlasUsername}
+                      onChange={(e) => setFormData({ ...formData, atlasUsername: e.target.value })} />
+
+                    <TextInput
+                      label="Atlas API Key"
+                      description="Description"
+                      name="atlasAPIKey"
+                      placeholder="Placeholder"
+                      value={formData.atlasAPIKey}
+                      onChange={(e) => setFormData({ ...formData, atlasAPIKey: e.target.value })} />
+
+                  </div>
+                  {/* Embedding API Details */}
+                  <h2 style={{ color: '#00684A' }}>Embedding API Details</h2>
+                  <div>
+                    <Select
+                      className="select-style"
+                      label="API Endpoints"
+                      name="ApiEndpoint"
+                      placeholder="Select"
+                      size={Size.Default}
+                      value={formData.selectedApiEndpoint}
+                      onChange={(value) => setFormData({ ...formData, selectedApiEndpoint: value })}
+                    >
+                      <Option value="OpenAI">OpenAI</Option>
+                      <Option value="HuggingFace">HuggingFace</Option>
+                    </Select>
+
+                    <TextInput
+                      label="API Key"
+                      description="Description"
+                      placeholder="Placeholder"
+                      value={formData.apiKey}
+                      onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })} />
+
+
+
+
+                  </div>
+                </div>
+
+
+              </div>
+            </Card>
+          </div>
+        </>
+
 
       );
     } else if (currentStep === stepNumber && currentStep === 2) {
       return (
         <div style={{ justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>
           <Card>
-            <h1>i am {title}</h1>
-            <p>Index Name: {formData.indexName}</p>
-            <p>Selected Database: {formData.selectedDatabase}</p>
-            <p>Selected Collection: {formData.selectedCollection}</p>
-            <p>Selected Field: {formData.selectedField}</p>
-            <p>Selected API Endpoint: {formData.selectedApiEndpoint}</p>
-            <p>API Key: {formData.apiKey}</p>
+            <h2 style={{ color: '#00684A', paddingLeft: '125px' }}>Review before creating the embeddings
+              <br></br>
+              ________</h2>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>
+              <div style={{ flex: 1, marginRight: '20px' }}>
+                <h2>Atlas Data Details</h2>
+                <p>Cluster Name: {formData.selectedCluster}</p>
+                <p>Database: {formData.selectedDatabase}</p>
+                <p>Collection: {formData.selectedCollection}</p>
+                <p>Select Field: {formData.selectedField}</p>
+              </div>
+              <div style={{ flex: 1, marginLeft: '20px' }}>
+                <h2>Atlas Access Details</h2>
+                <p>Group ID: {formData.groupID}</p>
+                <p>Atlas Username: {formData.atlasUsername}</p>
+                <p>Atlas API Key: {formData.atlasAPIKey}</p>
+              </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>
+              <div style={{ flex: 1, marginRight: '20px' }}>
+                <h2>Index Details</h2>
+                <p>Similarity: {formData.similarity}</p>
+              </div>
+              <div style={{ flex: 1, marginLeft: '20px' }}>
+                <h2>Embedding API Details</h2>
+                <p>API Endpoint: {formData.selectedApiEndpoint}</p>
+                <p>API Key: {formData.apiKey}</p>
+              </div>
+            </div>
           </Card>
         </div>
       );
-    } else if (currentStep === stepNumber && currentStep === 3) {
+    }
+    else if (currentStep === stepNumber && currentStep === 3) {
       return (
 
-        <div style={{ justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>
+        <div style={{ justifyContent: 'space-between', paddingLeft: '100px', paddingRight: '125px' }}>
           <Card>
-            <h1>i am {title}</h1>
-            <p> Progress : {progress} </p>
+            <h1 style={{ color: '#00684A' }}>Jedi in Action.... whoosssshhhhh</h1>
+            <div style={{ display: 'flex', paddingLeft: '125px', justifyContent: 'space-between', alignItems: 'flex-start', padding: '20px' }}>
+              <div style={{ flex: 1 }}>
+
+                <h4>Login Success:</h4>
+                <h4>App Created:</h4>
+                <h4>Enabling Auth:</h4>
+                <h4>Datasource Linked:</h4>
+                <h4>Creating Rules:</h4>
+                <h4>Creating vectors:</h4>
+                <h4>Creating index:</h4>
+              </div>
+              <div style={{ flex: 1 }}>
+                <h4>{loginProgress}</h4>
+                <h4>{appProgress}</h4>
+                <h4>{authProgress}</h4>
+                <h4>{dsProgress}</h4>
+                <h4>{ruleProgress}</h4>
+                <h4>{vectorProgress}</h4>
+                <h4>{indexProgress}</h4>
+              </div>
+            </div>
+            <p> Overall Progress: {progress} </p>
           </Card>
         </div>
+
 
       );
     } else if (currentStep === stepNumber && currentStep === 4) {
       return (
+
         <div style={{ justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>
-          <Card>
-            <div style={{ flex: 1, marginRight: '20px', padding: '25px' }}>
-              <div>
 
-                <div style={{ display: 'flex', marginBottom: '20px', justifyContent: 'space-between' }}>
-                  <div style={{ flex: 1, marginRight: '20px', padding: '25px' }}>
+          <Card style={{ backgroundColor: '#00684A', color: '#ffffff' }}>
 
-                    <h4>User Inputs </h4>
-                    <p>Index Name: {formData.indexName}</p>
-                    <p>Selected Database: {formData.selectedDatabase}</p>
-                    <p>Selected Collection: {formData.selectedCollection}</p>
-                    <p>Selected Field: {formData.selectedField}</p>
-                    <p>Selected API Endpoint: {formData.selectedApiEndpoint}</p>
-                    <p>API Key: {formData.apiKey}</p>
-                  </div>
+            <h1 style={{ justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>Implement usecase on newly created embeddings</h1>
+            <br></br>
+            <div style={{ justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>
+              <Select
+                className="select-style"
 
-                  -----------
-                  <div style={{ flex: 1, marginLeft: '20px' }}>
+                label=""
+                name="selectedUsecase"
+                placeholder="Select"
+                size={Size.Large}
+                value={formData.selectedUsecase}
+                onChange={(value) => setFormData({ ...formData, selectedUsecase: value })}
+              >
+                <Option value="RAG">RAG</Option>
+                <Option value="Semantic Search">Semantic Search</Option>
+                <Option value="QA">Q & A </Option>
+                <Option value="ChatBot">ChatBot </Option>
+              </Select>
 
-                    <h4>Overall Summary </h4>
-                    <p>Index Name: {formData.indexName}</p>
-                    <p>Selected Database: {formData.selectedDatabase}</p>
-                    <p>Selected Collection: {formData.selectedCollection}</p>
-                    <p>Selected Field: {formData.selectedField}</p>
-                    <p>Selected API Endpoint: {formData.selectedApiEndpoint}</p>
-                    <p>API Key: {formData.apiKey}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div style={{ flex: 1, marginLeft: '20px' }}>
+              <br></br>
+              <Button
 
-              <Card>
-
-                <h1>Implement usecase on newly created embeddings</h1>
-
-                <Select
-                  className="select-style"
-                  label="Select Usecase"
-                  name="selectedUsecase"
-                  placeholder="Select"
-                  size={Size.Large}
-                  value={formData.selectedUsecase}
-                  onChange={(value) => setFormData({ ...formData, selectedUsecase: value })}
-                >
-                  <Option value="RAG">RAG</Option>
-                  <Option value="Semantic Search">Semantic Search</Option>
-                  <Option value="QA">Q & A </Option>
-                  <Option value="ChatBot">ChatBot </Option>
-                </Select>
+                onClick={() => {
+                  // Open corresponding file based on selected usecase
+                  if (formData.selectedUsecase === "RAG") {
+                    setCreateIndex(false);
+                    setUsecaseSelected('RAG');
 
 
-                <Button
+                  } else if (formData.selectedUsecase === "Semantic Search") {
+                    setCreateIndex(false);
+                    setUsecaseSelected('Semantic');
 
-                  onClick={() => {
-                    // Open corresponding file based on selected usecase
-                    if (formData.selectedUsecase === "RAG") {
-                      setCreateIndex(false);
-                      setUsecaseSelected('RAG');
+                  }
 
-
-                    } else if (formData.selectedUsecase === "Semantic Search") {
-                      setCreateIndex(false);
-                      setUsecaseSelected('Semantic');
-
-                    }
-
-                  }}
-                >
-                  Confirm
-                </Button>
-              </Card>
-
-
-
+                }}
+              >
+                Confirm
+              </Button>
             </div>
           </Card>
+          <br></br>
+          <Card >
+
+            <h2 style={{ color: '#00684A', paddingLeft: '125px' }}>Summary of the Jedi Destination
+              <br></br>
+              ________</h2>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>
+              <div style={{ flex: 1, marginRight: '20px' }}>
+                <h2>Embeddings details</h2>
+                <p>Index Field Name: {formData.selectedField}_embeddings</p>
+
+              </div>
+              <div style={{ flex: 1, marginLeft: '20px' }}>
+                <h2>Atlas App Service Details</h2>
+                <p>Service Name : skywalkerVectorApp</p>
+
+              </div>
+            </div>
+
+
+
+
+            <h2 style={{ color: '#00684A', paddingLeft: '125px' }}>User Input Data
+              <br></br>
+              ________</h2>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>
+              <div style={{ flex: 1, marginRight: '20px' }}>
+                <h2>Atlas Data Details</h2>
+                <p>Cluster Name: {formData.selectedCluster}</p>
+                <p>Database: {formData.selectedDatabase}</p>
+                <p>Collection: {formData.selectedCollection}</p>
+                <p>Select Field: {formData.selectedField}</p>
+              </div>
+              <div style={{ flex: 1, marginLeft: '20px' }}>
+                <h2>Atlas Access Details</h2>
+                <p>Group ID: {formData.groupID}</p>
+                <p>Atlas Username: {formData.atlasUsername}</p>
+                <p>Atlas API Key: {formData.atlasAPIKey}</p>
+              </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>
+              <div style={{ flex: 1, marginRight: '20px' }}>
+                <h2>Index Details</h2>
+                <p>Similarity: {formData.similarity}</p>
+              </div>
+              <div style={{ flex: 1, marginLeft: '20px' }}>
+                <h2>Embedding API Details</h2>
+                <p>API Endpoint: {formData.selectedApiEndpoint}</p>
+                <p>API Key: {formData.apiKey}</p>
+              </div>
+            </div>
+          </Card>
+
+
         </div>
+
+
       );
     } else if (currentStep === stepNumber && currentStep === 5) {
       return (
