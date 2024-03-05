@@ -9,6 +9,10 @@ import { Option, OptionGroup, Select, Size } from '@leafygreen-ui/select';
 import { useSizingContext, createIndexSetter } from '../context/SizingContext';
 import DataService from "../service/DataSerice";
 import * as Realm from "realm-web";
+import { useSkywalker } from "../../hooks/useSkywalker";
+
+
+
 
 function VStepper() {
   const [darkMode, setDarkMode] = useState(false);
@@ -25,9 +29,10 @@ function VStepper() {
   const [vectorProgress, setVectorProgress] = useState('')
   const [indexProgress, setIndexProgress] = useState('')
 
+  const { ...todoActions } = useSkywalker();
 
   const maxDisplayedSteps = 5;
-  const { setCreateIndex, setUsecaseSelected, usecaseSelected } = useSizingContext();
+  const { setCreateIndex, setUsecaseSelected, usecaseSelected, user } = useSizingContext();
 
   let jsonData = {};
 
@@ -51,6 +56,17 @@ function VStepper() {
     indexName: "",
   });
 
+  let insertData = {
+    "clusterName": formData.selectedCluster,
+    "database": formData.selectedDatabase,
+    "collection": formData.selectedCollection,
+    "selectField": formData.selectedField,
+    "indexField": formData.selectedField+'_embedding',
+    "indexName": formData.indexName,
+    "createAt": new Date().toISOString(),
+    "createBy": user
+  }
+
   const decrementStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
@@ -61,8 +77,8 @@ function VStepper() {
 
     if (currentStep < maxDisplayedSteps) {
       setCurrentStep(currentStep + 1);
-      if(currentStep === 1){
-         jsonData = {
+      if (currentStep === 1) {
+        jsonData = {
           atlasDataDetails: {
             clusterName: formData.selectedCluster,
             database: formData.selectedDatabase,
@@ -75,14 +91,15 @@ function VStepper() {
             atlasAPIKey: formData.atlasAPIKey
           },
           indexDetails: {
-            similarity: formData.similarity
+            similarity: formData.similarity,
+            indexName: formData.indexName
           },
           embeddingAPIDetails: {
             apiEndpoint: formData.selectedApiEndpoint,
             apiKey: formData.apiKey
           }
         };
-    
+
       }
     }
 
@@ -154,10 +171,12 @@ function VStepper() {
         });
         setOnprogress("Vector Creation Completed!")
         setVectorProgress("Completed");
+        const response = await todoActions.insertDoc(insertData);
         //Create Vector Index
         await dataService.handleCreateIndex(groupId, clusterName, collectionName, dbname, "embedding")
         setOnprogress("Vector Index Created!")
         setIndexProgress("Completed");
+  
       } catch (err) {
         console.error("Failed to log in", err);
         setOnprogress("Failed to log in")
@@ -250,6 +269,15 @@ function VStepper() {
                   {/* Embedding API Details */}
                   <h2 style={{ color: '#00684A' }}>Index Details</h2>
                   <div>
+
+                  <TextInput
+                      label="Vector Index Name"
+                      description="Description"
+                      name="indexName"
+                      placeholder="Placeholder"
+                      value={formData.indexName}
+                      onChange={(e) => setFormData({ ...formData, indexName: e.target.value })} />
+
 
                     <Select
                       className="select-style"
@@ -362,6 +390,7 @@ function VStepper() {
             <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>
               <div style={{ flex: 1, marginRight: '20px' }}>
                 <h2>Index Details</h2>
+                <p>Index Name: {formData.indexName}</p>
                 <p>Similarity: {formData.similarity}</p>
               </div>
               <div style={{ flex: 1, marginLeft: '20px' }}>
@@ -500,6 +529,7 @@ function VStepper() {
             <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '125px', paddingRight: '125px' }}>
               <div style={{ flex: 1, marginRight: '20px' }}>
                 <h2>Index Details</h2>
+                <p>Index Name: {formData.indexName}</p>
                 <p>Similarity: {formData.similarity}</p>
               </div>
               <div style={{ flex: 1, marginLeft: '20px' }}>

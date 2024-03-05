@@ -233,7 +233,7 @@ export function useSkywalker() {
   const insertDoc = async (insertData) => {
     if (insertData) {
       try {
-        await SizingAtlasDevCollection.insertOne(insertData);
+        await todoIndexCollection.insertOne(insertData);
       } catch (err) {
         if (err.error.match(/^Duplicate key error/)) {
           console.warn(

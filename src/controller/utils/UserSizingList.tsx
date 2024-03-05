@@ -46,7 +46,7 @@ const UserSizingList: React.FC = () => {
     const fetchData = async () => {
         try {
             const filterData = {
-                "user": user
+                "createBy": user
             };
 
 
@@ -122,26 +122,23 @@ const UserSizingList: React.FC = () => {
                 >
 
                     <div className="info-item">
-
-                        <span style={{ width: "10%" }}>clusterName </span>
-                        <span style={{ width: "10%" }}>database</span>
-                        <span style={{ width: "10%" }}>collection</span>
-                        <span style={{ width: "10%" }}>selectField</span>
-                        <span style={{ width: "10%" }}>indexField</span>
-                        <span style={{ width: "10%" }}>indexName</span>
-                        <span style={{ width: "10%" }}>createAt</span>
-                        <span style={{ width: "10%" }}>createBy</span>
-
+                        <span style={{ width: "10%", fontWeight: "bold" }}>CLUSTER </span>
+                        <span style={{ width: "10%", fontWeight: "bold" }}>NAMESPACE</span>
+                        <span style={{ width: "10%", fontWeight: "bold" }}>FIELD</span>
+                        <span style={{ width: "10%", fontWeight: "bold" }}>EMBEDDING  FIELD</span>
+                        <span style={{ width: "10%", fontWeight: "bold" }}>INDEX NAME</span>
+                        <span style={{ width: "10%", fontWeight: "bold" }}>DATE</span>
+                        <span style={{ width: "10%", fontWeight: "bold" }}>USER</span>
                     </div>
 
 
 
                     {currentDocuments.map((doc, index) => (
                         <div className={`card-content ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}>
-                            <div className="info-item">
+                            <div  style={{ color: '#000000' }} className="info-item">
                                 <span style={{ width: "10%" }}>{doc.clusterName}</span>
-                                <span style={{ width: "10%" }}>{doc.database}</span>
-                                <span style={{ width: "10%" }}>{doc.collection}</span>
+                                <span style={{ width: "10%" }}>{doc.database}.{doc.collection}</span>
+
                                 <span style={{ width: "10%" }}>{doc.selectField}</span>
                                 <span style={{ width: "10%" }}>{doc.indexField}</span>
                                 <span style={{ width: "10%" }}>{doc.indexName}</span>
