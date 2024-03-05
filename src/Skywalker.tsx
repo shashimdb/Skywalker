@@ -26,6 +26,9 @@ import { sizingDataSetter, userDataSetter, useSizingContext, hasRenderedSetter, 
 import { AppProvider, useApp } from "./RealmApp";
 import { useSkywalker } from "./hooks/useSkywalker";
 
+import RAG from './controller/usecases/RAG';
+import Semantic from './controller/usecases/Semantic';
+
 const leafAnimation = keyframes`
   from {
     transform: rotate(-5deg);
@@ -177,7 +180,7 @@ const rightColumnStyle = css`
 const Skywalker: React.FC<{}> = () => {
 
   const { currentUser, logOut } = useApp();
-  const { createIndex } = useSizingContext();
+  const { createIndex, usecaseSelected } = useSizingContext();
   const { ...todoActions } = useSkywalker();
 
   const todoDocument = {
@@ -198,10 +201,11 @@ const Skywalker: React.FC<{}> = () => {
   useEffect(() => {
     try {
       console.log(createIndex);
+      console.log(usecaseSelected);
     } catch (error) {
       // Handle error if necessary
     }
-  }, [createIndex]);
+  }, [createIndex, usecaseSelected]);
 
 
 
@@ -218,6 +222,7 @@ const Skywalker: React.FC<{}> = () => {
             </div>
             <div className={rightColumnStyle}>
               <div className={sizingHeaderRight}>
+              <SaveButton />
 
                 {currentUser ? (
                   <Button
@@ -230,7 +235,7 @@ const Skywalker: React.FC<{}> = () => {
                     Log Out
                   </Button>
                 ) : null}
-                {createIndex ? (
+            
                   <><Button
                     href={window.location.origin}
                     target="_blank"
@@ -244,9 +249,9 @@ const Skywalker: React.FC<{}> = () => {
                   </Button>
 
                   </>
-                ) : (
-                  <SaveButton />
-                )}
+              
+               
+       
 
 
               </div>
@@ -282,22 +287,24 @@ const Skywalker: React.FC<{}> = () => {
                   <VStepper />
                 </Tab>
 
+              ) : usecaseSelected === 'Semantic' ? (
+                <Tab name="Semantic Search">
+                  <Semantic />
+                </Tab>
+
+              ): usecaseSelected === 'RAG' ? (
+                <Tab name="RAG">
+                  <RAG />
+                </Tab>
+
               ) : (
                 <Tab name="Vectors">
                   <br></br>
-
-
                   {hasIndex ? (
-
                     <BasicEmptyState />
-
-
                   ) : (
                     <UserSizingList />
                   )}
-
-
-
                 </Tab>
 
               )

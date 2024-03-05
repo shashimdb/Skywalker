@@ -6,11 +6,13 @@ import Button from "@leafygreen-ui/button";
 import Toggle from "@leafygreen-ui/toggle";
 import TextInput from '@leafygreen-ui/text-input';
 import { Option, OptionGroup, Select, Size } from '@leafygreen-ui/select';
+import { useSizingContext, createIndexSetter } from '../context/SizingContext';
 
 function VStepper() {
   const [darkMode, setDarkMode] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const maxDisplayedSteps = 5;
+  const { setCreateIndex, setUsecaseSelected, usecaseSelected } = useSizingContext();
 
   const [formData, setFormData] = useState({
     indexName: "",
@@ -171,29 +173,45 @@ function VStepper() {
             <Card>
 
               <h1>Implement usecase on newly cleared embeddings</h1>
-         
+
               <Select
-              className="select-style"
-              label="Select Usecase"
-              name="selectedUsecase"
-              placeholder="Select"
-              size={Size.Large}
-              value={formData.selectedUsecase}
-              onChange={(value) => setFormData({ ...formData, selectedUsecase: value })}
-            >
-              <Option value="RAG">RAG</Option>
-              <Option value="Semantic Search">Semantic Search</Option>
-              <Option value="QA">Q & A </Option>
-              <Option value="ChatBot">ChatBot </Option>
-            </Select>
+                className="select-style"
+                label="Select Usecase"
+                name="selectedUsecase"
+                placeholder="Select"
+                size={Size.Large}
+                value={formData.selectedUsecase}
+                onChange={(value) => setFormData({ ...formData, selectedUsecase: value })}
+              >
+                <Option value="RAG">RAG</Option>
+                <Option value="Semantic Search">Semantic Search</Option>
+                <Option value="QA">Q & A </Option>
+                <Option value="ChatBot">ChatBot </Option>
+              </Select>
 
 
-              <Button>
+              <Button
+
+                onClick={() => {
+                  // Open corresponding file based on selected usecase
+                  if (formData.selectedUsecase === "RAG") {
+                    setCreateIndex(false);
+                    setUsecaseSelected('RAG');
+         
+
+                  } else if (formData.selectedUsecase === "Semantic Search") {
+                    setCreateIndex(false);
+                    setUsecaseSelected('Semantic');
+                    
+                  }
+            
+                }}
+              >
                 Confirm
               </Button>
             </Card>
-           
-        
+
+
 
           </div>
         </div>
@@ -231,13 +249,23 @@ function VStepper() {
         >
           Previous
         </Button>
+
         <Button
           className="bottom-right-button"
           disabled={currentStep >= maxDisplayedSteps}
-          onClick={incrementStep}
+          onClick={() => {
+            if (currentStep === 4) {
+              // Navigate to the home page
+              window.location.href = "/home"; // Update the URL as needed
+            } else {
+              // Increment the step
+              incrementStep();
+            }
+          }}
         >
-          {currentStep === 2 ? "Review and Confirm" : "Next"}
+          {currentStep === 2 ? "Review and Confirm" : currentStep === 4 ? "Close" : "Next"}
         </Button>
+
       </div>
     </LeafyGreenProvider>
   );
