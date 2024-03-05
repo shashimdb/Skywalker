@@ -18,13 +18,22 @@ function VStepper() {
   const { setCreateIndex, setUsecaseSelected, usecaseSelected } = useSizingContext();
 
   const [formData, setFormData] = useState({
-    indexName: "",
+
+    selectedCluster: "",
     selectedDatabase: "",
     selectedCollection: "",
     selectedField: "",
+
+    groupID: "",
+    atlasUsername: "",
+    atlasAPIKey: "",
+
     selectedApiEndpoint: "",
     apiKey: "",
+    similarity: "",
     selectedUsecase: "",
+
+    indexName: "",
   });
 
   const decrementStep = () => {
@@ -48,13 +57,14 @@ function VStepper() {
     try {
 
       const dataService = new DataService()
-      const clusterName = "vector-demo"
-      const collectionName = "data"
-      const dbname = "rag"
-      const groupId = "62c679e0f373002ad29fdc35"
+      const clusterName = "vectorCluster"
+      const collectionName = "users"
+      const dbname = "library"
+      const groupId = "64f5e489d8a3f03aa3f834f4"
+      const fieldName = "name"
       // Handle Login
       const loginHandle = await dataService.handleLogin({
-        "username": "osvacnkq", "apiKey": "ff21ed27-7943-40ef-a401-0fb472bbe358"
+        "username": "irmwcwcb", "apiKey": "e65e3195-61ff-4a69-92e4-f2a534d9d487"
       })
       dataService.ACCESS_TOKEN = loginHandle.data.access_token
       console.log(dataService.ACCESS_TOKEN)
@@ -75,7 +85,7 @@ function VStepper() {
       console.log("Link DS - ", linkDataSource)
       const serviceId = linkDataSource.data._id
       // Create rule
-      const createRules = await dataService.handleCreateRule(groupId, appId, "rag", "data", serviceId)
+      const createRules = await dataService.handleCreateRule(groupId, appId, dbname, collectionName, serviceId)
       setOnprogress("Creating Rules...")
       console.log(createRules)
 
@@ -85,20 +95,20 @@ function VStepper() {
       try {
         const user = await app.logIn(credentials);
         const mongo = user.mongoClient("vector-data");
-        const collection = mongo.db("rag").collection("data");
+        const collection = mongo.db(dbname).collection(collectionName);
         console.log(collection)
         const documents = await collection.find({});
         setOnprogress("Creating vectors..")
         console.log("documnets array : ", documents)
         documents.forEach(async (element: any) => {
-          const embedding = await dataService.getEmbeddings(element.line, "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")
+          const embedding = await dataService.getEmbeddings(element[fieldName], "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")
           collection.updateOne({ _id: element._id },
             { $set: { embedding: embedding.data.data[0].embedding } }
           )
         });
         setOnprogress("Vector Creation Completed!")
         //Create Vector Index
-        await dataService.handleCreateIndex(groupId, clusterName, collectionName, dbname, "embedding" )
+        await dataService.handleCreateIndex(groupId, clusterName, collectionName, dbname, "embedding")
         setOnprogress("Vector Index Created!")
       } catch (err) {
         console.error("Failed to log in", err);
@@ -125,31 +135,39 @@ function VStepper() {
           <Card>
             <div style={{ flex: 1, marginRight: '20px', padding: '25px' }}>
 
-              <TextInput
-                label="Index Name"
-                description="Description"
-                placeholder="Placeholder"
-                value={formData.indexName}
-                onChange={(e) => setFormData({ ...formData, indexName: e.target.value })}
-              />
               <Select
                 className="select-style"
-                label="Select Database"
-                name="docMultiplier"
+                label="Cluster Name"
+                name="cluster"
                 placeholder="Select"
-                size={Size.Large}
+                size={Size.Default}
+                value={formData.selectedCluster}
+                onChange={(value) => setFormData({ ...formData, selectedCluster: value })}
+              >
+                <Option value="Cluster1">Cluster1</Option>
+                <Option value="Cluster2">Cluster2</Option>
+              </Select>
+
+              <Select
+                className="select-style"
+                label="Database"
+                name="database"
+                placeholder="Select"
+                size={Size.Default}
                 value={formData.selectedDatabase}
                 onChange={(value) => setFormData({ ...formData, selectedDatabase: value })}
               >
                 <Option value="DB1">DB1</Option>
                 <Option value="DB2">DB2</Option>
               </Select>
+
+
               <Select
                 className="select-style"
-                label="Select Collection"
-                name="docMultiplier"
+                label="Collection"
+                name="collection"
                 placeholder="Select"
-                size={Size.Large}
+                size={Size.Default}
                 value={formData.selectedCollection}
                 onChange={(value) => setFormData({ ...formData, selectedCollection: value })}
               >
@@ -157,12 +175,14 @@ function VStepper() {
                 <Option value="Col2">Col2</Option>
               </Select>
 
+
+
               <Select
                 className="select-style"
                 label="Select Field"
-                name="docMultiplier"
+                name="field"
                 placeholder="Select"
-                size={Size.Large}
+                size={Size.Default}
                 value={formData.selectedField}
                 onChange={(value) => setFormData({ ...formData, selectedField: value })}
               >
@@ -172,18 +192,47 @@ function VStepper() {
             </div>
             <div style={{ flex: 1, marginLeft: '20px' }}>
 
+              <TextInput
+                label="Atlas Groupd ID "
+                description="Description"
+                name="groupID"
+                placeholder="Placeholder"
+                value={formData.groupID}
+                onChange={(e) => setFormData({ ...formData, groupID: e.target.value })}
+              />
+
+
+              <TextInput
+                label="Atlas Username"
+                description="Description"
+                name="atlasUsername"
+                placeholder="Placeholder"
+                value={formData.atlasUsername}
+                onChange={(e) => setFormData({ ...formData, atlasUsername: e.target.value })}
+              />
+
+              <TextInput
+                label="Atlas API Key"
+                description="Description"
+                name="atlasAPIKey"
+                placeholder="Placeholder"
+                value={formData.atlasAPIKey}
+                onChange={(e) => setFormData({ ...formData, atlasAPIKey: e.target.value })}
+              />
+
               <Select
                 className="select-style"
                 label="API Endpoints"
-                name="docMultiplier"
+                name="ApiEndpoint"
                 placeholder="Select"
-                size={Size.Large}
+                size={Size.Default}
                 value={formData.selectedApiEndpoint}
                 onChange={(value) => setFormData({ ...formData, selectedApiEndpoint: value })}
               >
                 <Option value="OpenAI">OpenAI</Option>
                 <Option value="HuggingFace">HuggingFace</Option>
               </Select>
+
               <TextInput
                 label="API Key"
                 description="Description"
@@ -191,6 +240,22 @@ function VStepper() {
                 value={formData.apiKey}
                 onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
               />
+
+
+              <Select
+                className="select-style"
+                label="Similarity"
+                name="similarity"
+                placeholder="Select"
+                size={Size.Default}
+                value={formData.similarity}
+                onChange={(value) => setFormData({ ...formData, similarity: value })}
+              >
+                <Option value="cosine">Cosine</Option>
+                <Option value="dotproduct">DotProduct</Option>
+                <Option value="wuclidean">Euclidean</Option>
+              </Select>
+
             </div>
           </Card>
         </div>
@@ -334,34 +399,34 @@ function VStepper() {
         </div>
         <br></br>
         <div style={{ justifyContent: 'center', paddingLeft: '125px', paddingRight: '125px', float: 'right' }}>
-        <Button
-          className="bottom-left-button"
-          disabled={currentStep <= 1}
-          onClick={decrementStep}
-        >
-          Previous
-        </Button>
+          <Button
+            className="bottom-left-button"
+            disabled={currentStep <= 1}
+            onClick={decrementStep}
+          >
+            Previous
+          </Button>
 
-        <Button
-          className="bottom-right-button"
-          disabled={currentStep >= maxDisplayedSteps}
-          darkMode={true}
-          onClick={() => {
-            if (currentStep === 4) {
-              // Navigate to the home page
-              window.location.href = "/home"; // Update the URL as needed
-            } else if (currentStep === 2) {
-              // Increment the step
-              incrementStep();
-              handleSubmit();
-            }
-            else {
-              incrementStep();
-            }
-          }}
-        >
-          {currentStep === 2 ? "Review and Confirm" : currentStep === 4 ? "Close" : "Next"}
-        </Button>
+          <Button
+            className="bottom-right-button"
+            disabled={currentStep >= maxDisplayedSteps}
+            darkMode={true}
+            onClick={() => {
+              if (currentStep === 4) {
+                // Navigate to the home page
+                window.location.href = "/home"; // Update the URL as needed
+              } else if (currentStep === 2) {
+                // Increment the step
+                incrementStep();
+                handleSubmit();
+              }
+              else {
+                incrementStep();
+              }
+            }}
+          >
+            {currentStep === 2 ? "Review and Confirm" : currentStep === 4 ? "Close" : "Next"}
+          </Button>
         </div>
       </div>
     </LeafyGreenProvider>
