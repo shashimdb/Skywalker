@@ -41,9 +41,6 @@ function VStepper() {
   };
 
 
-  async function generateEmbedding() {
-
-  }
 
   /// Implement complete logic
   const handleSubmit = async () => {
@@ -52,14 +49,17 @@ function VStepper() {
 
       const dataService = new DataService()
       const clusterName = "vector-demo"
+      const collectionName = "data"
+      const dbname = "rag"
+      const groupId = "62c679e0f373002ad29fdc35"
       // Handle Login
       const loginHandle = await dataService.handleLogin({
-        "username": "<public-key>", "apiKey": "<private-key>"
+        "username": "osvacnkq", "apiKey": "ff21ed27-7943-40ef-a401-0fb472bbe358"
       })
       dataService.ACCESS_TOKEN = loginHandle.data.access_token
+      console.log(dataService.ACCESS_TOKEN)
       setOnprogress("Login Success...");
       // Create App
-      const groupId = '<group-id>'
       const createAppHandle = await dataService.handleCreateApp(groupId)
       console.log(createAppHandle)
       const appId = createAppHandle.data._id
@@ -88,10 +88,18 @@ function VStepper() {
         const collection = mongo.db("rag").collection("data");
         console.log(collection)
         const documents = await collection.find({});
-        setOnprogress("Creating vector..")
-        documents.forEach(element => {
-          console.log("data : ", element.line)
+        setOnprogress("Creating vectors..")
+        console.log("documnets array : ", documents)
+        documents.forEach(async (element: any) => {
+          const embedding = await dataService.getEmbeddings(element.line, "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")
+          collection.updateOne({ _id: element._id },
+            { $set: { embedding: embedding.data.data[0].embedding } }
+          )
         });
+        setOnprogress("Vector Creation Completed!")
+        //Create Vector Index
+        await dataService.handleCreateIndex(groupId, clusterName, collectionName, dbname, "embedding" )
+        setOnprogress("Vector Index Created!")
       } catch (err) {
         console.error("Failed to log in", err);
       }
