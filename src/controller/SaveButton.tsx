@@ -43,16 +43,12 @@ const buttonStyle2 = css`
   color: #ffffff;
 `;
 
-interface SaveButtonProps {
-    handleConfirmClick: (accountName: string, opportunityNo: string) => void;
-}
 
-const SaveButton: React.FC<SaveButtonProps> = ({ handleConfirmClick }) => {
+
+const SaveButton: React.FC = ({  }) => {
     const { accountName, opportunityNo, setSizingData, setCreateIndex } = useSizingContext();
     const [open, setOpen] = useState(false);
-    // const [localAccountName, setLocalAccountName] = useState('');
-    // const [localOpportunityNo, setLocalOpportunityNo] = useState('');
-    // const [opportunityOptions, setOpportunityOptions] = useState<JSX.Element[]>([]);
+
     const { ...todoActions } = useMetrons();
 
 
