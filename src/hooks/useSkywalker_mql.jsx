@@ -26,6 +26,11 @@ export function useSkywalker() {
     collection: "Users",
   });
 
+  const vectorSearchCollection = useCollection({
+    cluster: "vector-demo",
+    db: "rag",
+    collection: "data",
+  });
 
   const todoIndexCollection = useCollection({
     cluster: "vectorCluster",
@@ -53,6 +58,37 @@ export function useSkywalker() {
     db: "prism",
     collection: "acct",
   });
+
+
+  const vectorSearch = async (query, path, index, limit) => {
+
+    if (query) {
+      try {
+        const pipeline = [
+          {
+            queryVector: query,
+            path: path,
+            numCandidates: 5,
+            index: index,
+            limit: limit
+          }
+        ];
+
+
+        const response = await vectorSearchCollection.aggregate(pipeline);
+
+        return response;
+      } catch (err) {
+        if (err.error.match(/^Duplicate key error/)) {
+          console.warn(
+            `The following error means that this app tried to insert a todo multiple times (i.e. an existing todo has the same _id). In this app we just catch the error and move on. In your app, you might want to debounce the save input or implement an additional loading state to avoid sending the request in the first place.`
+          );
+        }
+        console.error(err);
+      }
+
+    }
+  }
 
 
 
@@ -425,5 +461,6 @@ export function useSkywalker() {
     deleteDoc,
     readDoc,
     fetchworkloads,
+    vectorSearch
   };
 }

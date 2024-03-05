@@ -7,6 +7,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@langchain/openai": "^0.0.16",
     "@leafygreen-ui/a11y": "^1.4.11",
     "@leafygreen-ui/badge": "^5.0.1",
     "@leafygreen-ui/banner": "^4.0.1",

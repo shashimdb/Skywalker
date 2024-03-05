@@ -10,9 +10,7 @@ import { useSizingContext, createIndexSetter } from '../context/SizingContext';
 import DataService from "../service/DataSerice";
 import * as Realm from "realm-web";
 import { useSkywalker } from "../../hooks/useSkywalker";
-
-
-
+import { element } from "@leafygreen-ui/lib/dist/typeIs";
 
 function VStepper() {
   const [darkMode, setDarkMode] = useState(false);
@@ -28,13 +26,34 @@ function VStepper() {
   const [ruleProgress, setRuleProgress] = useState('')
   const [vectorProgress, setVectorProgress] = useState('')
   const [indexProgress, setIndexProgress] = useState('')
+  const [jsonData, setJsonData] = useState({
+    atlasDataDetails: {
+      clusterName: '',
+      database: '',
+      collection: '',
+      selectField: '',
+    },
+    atlasAccessDetails: {
+      groupID: '',
+      atlasUsername: '',
+      atlasAPIKey: '',
+    },
+    indexDetails: {
+      similarity: '',
+      indexName: '',
+    },
+    embeddingAPIDetails: {
+      apiEndpoint: '',
+      apiKey: '',
+    }
+  })
 
   const { ...todoActions } = useSkywalker();
 
   const maxDisplayedSteps = 5;
   const { setCreateIndex, setUsecaseSelected, usecaseSelected, user } = useSizingContext();
 
-  let jsonData = {};
+  // let jsonData: any = {};
 
 
   const [formData, setFormData] = useState({
@@ -61,7 +80,7 @@ function VStepper() {
     "database": formData.selectedDatabase,
     "collection": formData.selectedCollection,
     "selectField": formData.selectedField,
-    "indexField": formData.selectedField+'_embedding',
+    "indexField": formData.selectedField + '_embedding',
     "indexName": formData.indexName,
     "createAt": new Date().toISOString(),
     "createBy": user
@@ -78,7 +97,7 @@ function VStepper() {
     if (currentStep < maxDisplayedSteps) {
       setCurrentStep(currentStep + 1);
       if (currentStep === 1) {
-        jsonData = {
+        setJsonData({
           atlasDataDetails: {
             clusterName: formData.selectedCluster,
             database: formData.selectedDatabase,
@@ -98,12 +117,12 @@ function VStepper() {
             apiEndpoint: formData.selectedApiEndpoint,
             apiKey: formData.apiKey
           }
-        };
+        });
 
       }
     }
 
-    console.log("JSON Data:", jsonData);
+    console.log("JSON Data: " + currentStep, jsonData);
   };
 
 
@@ -112,19 +131,21 @@ function VStepper() {
   const handleSubmit = async () => {
 
     try {
-
       const dataService = new DataService()
-      const clusterName = "vectorCluster"
-      const collectionName = "users"
-      const dbname = "library"
-      const groupId = "64f5e489d8a3f03aa3f834f4"
-      const fieldName = "name"
+      const clusterName = jsonData.atlasDataDetails.clusterName
+      const collectionName = jsonData.atlasDataDetails.collection
+      const dbname = jsonData.atlasDataDetails.database
+      const fieldName = jsonData.atlasDataDetails.selectField
+      const groupId = jsonData.atlasAccessDetails.groupID
+      const openai_key: string = jsonData.embeddingAPIDetails.apiKey
       // Handle Login
       const loginHandle = await dataService.handleLogin({
-        "username": "irmwcwcb", "apiKey": "e65e3195-61ff-4a69-92e4-f2a534d9d487"
+        "username": jsonData.atlasAccessDetails.atlasUsername,
+        "apiKey": jsonData.atlasAccessDetails.atlasAPIKey
       })
+      // Save Token
       dataService.ACCESS_TOKEN = loginHandle.data.access_token
-      console.log(dataService.ACCESS_TOKEN)
+      dataService.OpenAI_Key = openai_key
       setOnprogress("Login Success...")
       setLoginProgress("Completed")
       // Create App
@@ -139,6 +160,7 @@ function VStepper() {
       setOnprogress("Enabling Auth...")
       setAuthProgress("Completed")
       console.log(enableAuth)
+
       // Link DS
       const linkDataSource = await dataService.handleLinkDataSource(groupId, appId, clusterName)
       setOnprogress("Datasource Linked...")
@@ -151,6 +173,114 @@ function VStepper() {
       setRuleProgress("Completed");
       console.log(createRules)
 
+      //Create Vector Index
+      // await dataService.handleCreateIndex(groupId, clusterName, collectionName, dbname, `${fieldName}_embedding`)
+      // setOnprogress("Vector Index Created!")
+      // setIndexProgress("Completed");
+
+      // Create Function 
+      await dataService.handleCreateFunction(
+        groupId,
+        appId,
+        "embedFunction",
+        "exports = async function(stringToVectorize) {\
+          \
+              const openai_url = 'https://api.openai.com/v1/embeddings';\
+              \
+              const openAIKey = context.values.get(\"openAIKey\");\
+          \
+              try {\
+                  console.log(\"OpenAI Vectorizing: \" + stringToVectorize);\
+          \
+                  let response = await context.http.post({\
+                      url: openai_url,\
+                       headers: {\
+                          'Authorization': [`Bearer ${openAIKey}`],\
+                          'Content-Type': ['application/json']\
+                      },\
+                      body: JSON.stringify({\
+                          input: stringToVectorize,\
+                          model: \"text-embedding-ada-002\"\
+                      })\
+                  });\
+                  \
+                  let responseData = EJSON.parse(response.body.text());\
+                  \
+                  if(response.statusCode === 200) {\
+                      console.log(\"Successfully received embedding.\");\
+          \
+                      const embedding = responseData.data[0].embedding;\
+                      \
+                      console.log(JSON.stringify(embedding));\
+          \
+                      return embedding;\
+          \
+                  } else {\
+                      console.log(`Failed to receive embedding. Status code: ${response.statusCode}`);\
+                  }\
+          \
+              } catch(err) {\
+                  console.error(err);\
+              }\
+          };"
+      )
+      const functionRes = await dataService.handleCreateFunction(
+        groupId,
+        appId,
+        "vectorizeStringField",
+        "exports = async function(changeEvent) {\
+          const doc = changeEvent.fullDocument;\
+      \
+          try {\
+              console.log(\"Vectorizing text field of document with id: \" + doc._id);\
+      \
+              const stringFieldNameToVec = context.values.get(\"stringFieldNameToVec\");\
+      \
+              const embedding = await context.functions.execute(\"embedFunction\", doc[stringFieldNameToVec]);\
+      \
+              const dbName = context.values.get(\"dbName\");\
+              const collectionName = context.values.get(\"collectionName\");\
+              \
+              if (embedding.length > 0) {\
+                  const mongodb = context.services.get('vector-data');\
+                  const db = mongodb.db(dbName); \
+                  const collection = db.collection(collectionName); \
+      \
+                  const result = await collection.updateOne(\
+                      { _id: doc._id },\
+                      { $set: { \
+                        vector: embedding, \
+                      }}\
+                  );\
+      \
+                  if(result.modifiedCount === 1) {\
+                      console.log(\"Successfully updated the document.\");\
+                  } else {\
+                      console.log(\"Failed to update the document.\");\
+                  }\
+              } else {\
+                  console.log(\"Failed to receive embedding.\");\
+              }\
+      \
+          } catch(err) {\
+              console.error(err);\
+          }\
+      };");
+
+      setOnprogress("Function Created...")
+
+      // Create Trigger
+      await dataService.handleCreateTrigger(groupId, appId, functionRes.data._id, dbname, collectionName, serviceId)
+      setOnprogress("Trigger Setup for future inputs!")
+
+      // Handle Create Value
+      await dataService.handleCreateValues(groupId, appId, openai_key, "openAIKey")
+      await dataService.handleCreateValues(groupId, appId, dbname, "dbName")
+      await dataService.handleCreateValues(groupId, appId, collectionName, "collectionName")
+      await dataService.handleCreateValues(groupId, appId, fieldName, "stringFieldNameToVec")
+      
+      setOnprogress("OpenAI Key Stored!")
+
       // Create Vectors
       const app = new Realm.App({ id: clientAppId });
       const credentials = Realm.Credentials.anonymous();
@@ -158,25 +288,38 @@ function VStepper() {
         const user = await app.logIn(credentials);
         const mongo = user.mongoClient("vector-data");
         const collection = mongo.db(dbname).collection(collectionName);
-        console.log(collection)
         const documents = await collection.find({});
         setOnprogress("Creating vectors..")
         setLoginProgress("Completed");
         console.log("documnets array : ", documents)
-        documents.forEach(async (element: any) => {
-          const embedding = await dataService.getEmbeddings(element[fieldName], "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")
-          collection.updateOne({ _id: element._id },
-            { $set: { embedding: embedding.data.data[0].embedding } }
+
+        let ids: any[] = []
+        let texts: any[] = []
+        documents.forEach(async (element) => {
+          ids.push(element._id);
+          texts.push(element[fieldName]);
+        })
+        console.log(texts)
+        const embeddings = await dataService.getEmbeddings(texts, openai_key);
+        // Create embeddings
+
+        for (let index = 0; index < ids.length; index++) {
+          const element = ids[index];
+          collection.updateOne({ _id: element },
+            { $set: { 
+              [`${fieldName}_embedding`]: embeddings[index] 
+            } }
           )
-        });
+        }
+        // Update progress
         setOnprogress("Vector Creation Completed!")
         setVectorProgress("Completed");
         const response = await todoActions.insertDoc(insertData);
         //Create Vector Index
-        await dataService.handleCreateIndex(groupId, clusterName, collectionName, dbname, "embedding")
+        await dataService.handleCreateIndex(groupId, clusterName, collectionName, dbname, `${fieldName}_embedding`)
         setOnprogress("Vector Index Created!")
         setIndexProgress("Completed");
-  
+
       } catch (err) {
         console.error("Failed to log in", err);
         setOnprogress("Failed to log in")
@@ -222,6 +365,7 @@ function VStepper() {
                     >
                       <Option value="Cluster1">Cluster1</Option>
                       <Option value="vectorCluster">vectorCluster</Option>
+                      <Option value="vector-demo">vector-demo</Option>
                     </Select>
 
                     <Select
@@ -235,6 +379,7 @@ function VStepper() {
                     >
                       <Option value="DB1">DB1</Option>
                       <Option value="library">library</Option>
+                      <Option value="rag">rag</Option>
                     </Select>
 
 
@@ -249,6 +394,7 @@ function VStepper() {
                     >
                       <Option value="Col1">Col1</Option>
                       <Option value="users">users</Option>
+                      <Option value="data">data</Option>
                     </Select>
 
 
@@ -264,13 +410,14 @@ function VStepper() {
                     >
                       <Option value="Field1">Field1</Option>
                       <Option value="name">name</Option>
+                      <Option value="line">line</Option>
                     </Select>
                   </div>
                   {/* Embedding API Details */}
                   <h2 style={{ color: '#00684A' }}>Index Details</h2>
                   <div>
 
-                  <TextInput
+                    <TextInput
                       label="Vector Index Name"
                       description="Description"
                       name="indexName"
