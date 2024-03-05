@@ -26,6 +26,14 @@ export function useSkywalker() {
     collection: "Users",
   });
 
+
+  const todoIndexCollection = useCollection({
+    cluster: "vectorCluster",
+    db: "skywalker",
+    collection: "indexes",
+  });
+
+
   // Get a client object for the todo item collection
   const SizingAtlasDevCollection = useCollection({
     cluster: dataSourceName,
@@ -379,23 +387,12 @@ export function useSkywalker() {
             },
           },
           {
-            $project: {
-              accountName: 1,
-              opportunityNo: 1,
-              dateField: 1,
-              cloudProvider: 1,
-              workLoadName: 1,
-              workLoadType: 1,
-              user: 1,
-            },
-          },
-          {
             $limit: 25,
           },
         ];
 
 
-        const response = await SizingAtlasDevCollection.aggregate(pipeline);
+        const response = await todoIndexCollection.aggregate(pipeline);
 
         return response;
       } catch (err) {

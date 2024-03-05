@@ -17,13 +17,14 @@ import '../../css/UserSizingList.css';
 
 interface Document {
     _id: { $oid: string };
-    accountName: string;
-    opportunityNo: string;
-    cloudProvider: string;
-    dateField: string;
-    workLoadType: string;
-    workLoadName: string;
-    user: string;
+    clusterName: string;
+    database: string;
+    collection: string;
+    selectField: string;
+    indexField: string;
+    indexName: string;
+    createAt: string;
+    createBy: string;
 }
 
 
@@ -48,24 +49,18 @@ const UserSizingList: React.FC = () => {
                 "user": user
             };
 
-            const filterAllData = {
-                "user": {
-                    "$ne": user
-                }
-            };
 
-         
 
 
             // const response = await dataService.handleUserSizingList(filterData);
             // const responseAllUser = await dataService.handleUserSizingList(filterAllData);
 
             const response = await todoActions.fetchLatestSizing(filterData);
-            const responseAllUser = await todoActions.fetchLatestSizing(filterAllData);
+
 
             response && setDocuments(response);
-            responseAllUser && setAllDocuments(responseAllUser); 
-            
+
+
             // Assuming response is an object with a "documents" array containing document objects
         } catch (error) {
             console.error("Error:", error);
@@ -123,18 +118,20 @@ const UserSizingList: React.FC = () => {
             <div className="card-container">
 
                 <div className="custom-card"
-               
+
                 >
-                    
+
                     <div className="info-item">
 
-                        <span style={{ width: "40%" }}>Namespace </span>
-                        <span style={{ width: "20%" }}>Embed Field</span>
-                        <span style={{ width: "10%" }}>Use Case</span>
-                        <span style={{ width: "20%" }}>Created By:</span>
-                        <span style={{ width: "20%" }}>Date:</span>
-                        <span style={{ width: "3%" }}>Action:</span>
-            
+                        <span style={{ width: "10%" }}>clusterName </span>
+                        <span style={{ width: "10%" }}>database</span>
+                        <span style={{ width: "10%" }}>collection</span>
+                        <span style={{ width: "10%" }}>selectField</span>
+                        <span style={{ width: "10%" }}>indexField</span>
+                        <span style={{ width: "10%" }}>indexName</span>
+                        <span style={{ width: "10%" }}>createAt</span>
+                        <span style={{ width: "10%" }}>createBy</span>
+
                     </div>
 
 
@@ -142,21 +139,19 @@ const UserSizingList: React.FC = () => {
                     {currentDocuments.map((doc, index) => (
                         <div className={`card-content ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}>
                             <div className="info-item">
-                                <span style={{ width: "40%" }}>{doc.accountName}: <br /><h3 style={{ margin: "0" }}><strong>{doc.opportunityNo}</strong></h3></span>
-                                <span style={{ width: "20%" }}> {doc.workLoadType}  Tier<br /><h3 style={{ margin: "0" }}><strong>{doc.workLoadName}</strong></h3></span>
-                                <span style={{ width: "10%" }}>
-                                    {doc.cloudProvider === 'Azure' && <img src="azure_logo.png" alt="Azure" width="40" height="30" />}
-                                    {doc.cloudProvider === 'AWS' && <img src="aws_logo.png" alt="AWS" width="45" height="30" />}
-                                    {doc.cloudProvider === 'GCP' && <img src="gcp_logo.png" alt="GCP" width="40" height="30" />}
-                                    <br />
-                                </span>
-                                <span style={{ width: "20%" }}> {doc.user} </span>
-                                <span style={{ width: "20%" }}> {new Date(doc.dateField).toISOString().replace("T", " ").split(".")[0]}</span>
+                                <span style={{ width: "10%" }}>{doc.clusterName}</span>
+                                <span style={{ width: "10%" }}>{doc.database}</span>
+                                <span style={{ width: "10%" }}>{doc.collection}</span>
+                                <span style={{ width: "10%" }}>{doc.selectField}</span>
+                                <span style={{ width: "10%" }}>{doc.indexField}</span>
+                                <span style={{ width: "10%" }}>{doc.indexName}</span>
+                                <span style={{ width: "10%" }}>{doc.createAt}</span>
+                                <span style={{ width: "10%" }}>{doc.createBy}</span>
 
-                                <Button onClick={() => generateLink(doc.accountName, doc.opportunityNo)}><FontAwesomeIcon icon={faEdit} /> </Button>
                             </div>
                         </div>
                     ))}
+
                     <div className="pagination">
 
                         {Array.from({ length: endPage - startPage + 1 }, (_, i) => (
@@ -168,7 +163,7 @@ const UserSizingList: React.FC = () => {
 
             </div>
 
-        
+
 
         </div>
 
