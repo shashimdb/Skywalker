@@ -16,6 +16,8 @@ h1 {
     flex-wrap: wrap;
     justify-content: center;
     color: #00684a;
+    padding-right: 125px;
+    padding-left: 125px;
 }
 
 .custom-card {

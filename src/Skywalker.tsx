@@ -73,6 +73,7 @@ const searchBox = css`
 width: 300%;
 border-radius: 10px; 
 border: 2px solid #00684A;
+margin-left: 25px;
 `;
 
 const sizingHeaderRight = css`
@@ -219,6 +220,9 @@ const Skywalker: React.FC<{}> = () => {
             <div className={leftColumnStyle}>
               <img src="jedi.png" alt="AWS" width="95" height="70" />
               <span className={logoStyleFont}>Skywalker</span>
+              <div className={searchBox}>
+                  <SearchBox />
+                </div>
             </div>
             <div className={rightColumnStyle}>
               <div className={sizingHeaderRight}>
@@ -264,9 +268,9 @@ const Skywalker: React.FC<{}> = () => {
             {!createIndex ? (
 
               <div className={sizingHeaderLeft}>
-                <div className={searchBox}>
+                {/* <div className={searchBox}>
                   <SearchBox />
-                </div>
+                </div> */}
               </div>
 
             ) : (

@@ -122,9 +122,8 @@ const UserSizingList: React.FC = () => {
 
             <div className="card-container">
 
-                <ExpandableCard className="custom-card"
-                    title="Your Embeddings"
-                    defaultOpen={true}
+                <div className="custom-card"
+               
                 >
                     
                     <div className="info-item">
@@ -134,7 +133,8 @@ const UserSizingList: React.FC = () => {
                         <span style={{ width: "10%" }}>Use Case</span>
                         <span style={{ width: "20%" }}>Created By:</span>
                         <span style={{ width: "20%" }}>Date:</span>
-                       <p style={{ width: "3%" }} ></p>
+                        <span style={{ width: "3%" }}>Action:</span>
+            
                     </div>
 
 
@@ -163,7 +163,7 @@ const UserSizingList: React.FC = () => {
                             <Button key={startPage + i} className={currentPage === startPage + i ? 'active' : ''} onClick={() => paginate(startPage + i)}>{startPage + i}</Button>
                         ))}
                     </div>
-                </ExpandableCard>
+                </div>
 
 
             </div>
