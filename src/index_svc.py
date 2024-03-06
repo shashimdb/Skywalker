@@ -1,9 +1,40 @@
 from pymongo import MongoClient
 from flask import Flask, request, jsonify
 import time
+from langchain import PromptTemplate, LLMChain
+from langchain.llms import OpenAI
+from functools import lru_cache
 
 app = Flask(__name__)
 
+@lru_cache(1)
+def get_rag_llm():
+    template = """
+    Answer the question based on the context and adhering to instruciton. If the
+    question cannot be answered using the information provided answer
+    with 'I don't know'.
+    ### Context : {context}
+
+    ### Question: {question}
+
+    ### Instruction : {instruction}
+
+    ### Answer:
+    """
+    prompt = PromptTemplate(template=template, input_variables=["question", "context","instruction"])
+    llm_chain = LLMChain(prompt=prompt, llm=OpenAI(model="gpt-3.5-turbo"))
+    return llm_chain
+
+
+@app.route('/answer_question', methods=['POST'])
+def answer_question():
+    req = request.get_json()
+    context = req['context']
+    question = req['question']
+    instruction = req['instruction']
+    chain = get_rag_llm()
+    result = chain({"question":question,"context":context,"instruction": instruction})
+    return jsonify({"answer": result})
 
 @app.route('/index_collection', methods=['POST'])
 def index():
@@ -47,6 +78,8 @@ def index():
             cnt += 1
     else:
         return jsonify(message="No documents in collection. Failed to create index!!!")
+    
+
 
 if __name__ == '__main__':
     app.run(debug=True)
