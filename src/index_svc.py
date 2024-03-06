@@ -53,7 +53,7 @@ def index():
       "name": "skywalkerIdx",
       "type": "vectorSearch",
       "fields": [{
-        "type": "vector",
+        "type": "knnVector",
         "path": "embedding",
         "numDimensions": 1536,
         "similarity": "euclidean"
